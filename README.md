@@ -1,4 +1,4 @@
-#Student Notes
+# Student Notes
 
 ## Files
    - .gitgnore - maybe useful for students to adjust
@@ -10,7 +10,8 @@
 If you happen to prefer using the Webstorm IDE you can use the project files in .idea
 
 Further, _optionally_ you might want to:
-	- install node.js from the web
+
+    - install node.js from the web
 	- Then from the command-line:
 		$ cd <root directory of the Lighting directory>
 		$ npm install
