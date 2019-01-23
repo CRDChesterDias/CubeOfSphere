@@ -2,7 +2,7 @@
 
 ## Files
    - .gitgnore - maybe useful for students to adjust
-   - otherwise most students can ignore the other files in this directory.  They are (more or less) specific to 
+   - otherwise most students can ignore the other files in this immediate directory (the skeleton source code is under .\Lighting).  They are (more or less) specific to 
      the Webstorm IDE.
 
 ## Webstorm IDE
