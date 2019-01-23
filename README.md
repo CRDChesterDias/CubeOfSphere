@@ -2,8 +2,8 @@
 
 ## Files
    - .gitgnore - maybe useful for students to adjust
-   - otherwise most students can ignore the other files in this immediate directory (the skeleton source code is under .\Lighting).  They are (more or less) specific to 
-     the Webstorm IDE.
+   - otherwise most students can ignore the other files in this immediate directory. They are (more or less) specific to 
+     the Webstorm IDE.  The skeleton source code is sub-directory .\Lighting.  
 
 ## Webstorm IDE
 
