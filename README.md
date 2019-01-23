@@ -11,11 +11,12 @@ If you happen to prefer using the Webstorm IDE you can use the project files in 
 
 Further, _optionally_ you might want to:
 
-    - install node.js from the web
-	- Then from the command-line:
+    * install node.js from the web
+	* Then from the command-line:
+      ```
 		$ cd <root directory of the Lighting directory>
 		$ npm install
-
+      ```
 	  This will install extra 'plugins' that the mentioned .idea project files use for enabling 'advanced'
           developer features.  (Again this is optional).
 
