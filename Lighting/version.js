@@ -10,5 +10,5 @@
  */
 function product_version() {
     /* do not modify this line, it is automatically generated */
-    return /*@product_version*/'1.75';
+    return /*@product_version*/'1.79';
 }
