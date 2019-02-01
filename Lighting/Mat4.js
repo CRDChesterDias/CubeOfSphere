@@ -1,6 +1,6 @@
 /**
  * @author Zachary Wartell, ...
- * @version 1.x-20
+ * @version 1.x-21
  *
  * @file Mat4.js is a set of geometry and linear algebra functions related to 4x4 Matrices.
  *
@@ -50,7 +50,7 @@ const Mat4_SIZE=Mat4_ROWS*Mat4_COLUMNS;
 
 /**
  * @author Zachary Wartell
- * @version 1.x-20
+ * @version 1.x-21
  * @class Mat4 is a 4x4 linear algebra matrix
  *
  * Elements are internally stored in 'column major' layout [{@link Cite.2}], i.e. for matrix M with math convention M_rc (r=row,c=column)
@@ -531,7 +531,7 @@ class Mat4
      * @param {Number}  x : X coordinate of vector of rotation axis
      * @param {Number}  y : Y coordinate of vector of rotation axis
      * @param {Number}  z : Z coordinate of vector of rotation axis
-     * 
+     *
      */
     rotate(angle, x, y, z)
     {
@@ -564,7 +564,6 @@ class Mat4
      * See {@link http://mathworld.wolfram.com/Cofactor.html }
      *
      * @param {Mat4} M
-     * @return determinant of the minor M_ij of this Mat4
      */
     setCofactorMatrix (M)
     {
@@ -828,10 +827,12 @@ class Vec4
 
 /**
  * @author Zachary Wartell && ... 
- * @description  This contains misc. code for testing and demonstrating the functions in this file.
+ * @description  This contains misc. example code for testing and demonstrating the methods in this file.
  * 
- * Student Note: The tests are not meant to be comprehensive, but rather only provide examples.
- * @todo [STUDENT] (as needed) add/alter this function for testing your Mat4 code, etc.
+ * Student Note: The tests are not meant to be comprehensive, but rather only provide examples.  Also,
+ * Mat4_test may include calls to methods & functions not required by your particular assignment in a given
+ * semester.  Edit it as needed.
+ * @todo [STUDENT] (as needed) add/alter this function for testing your Mat4 code, etc.  Note,
  *
  */
 function Mat4_test()

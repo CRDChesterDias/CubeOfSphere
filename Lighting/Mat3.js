@@ -1,6 +1,6 @@
 /**
  * @author Zachary Wartell, ...
- * @version 1.x-16
+ * @version 1.x-17
  *
  * @file Mat3.js is a set of geometry and linear algebra functions related to 3x3 Matrices.
  *
@@ -607,11 +607,11 @@ class Vec3
 /**
  * @author Zachary Wartell && ...
  *
- * @description This contains misc. code for testing and giving examples of using functions and methods in this file.
- * 
- * Student Note: The tests are not meant to be comprehensive, but rather only provide examples.
- * Students can add to this function for testing their additional code...
+ * @description  This contains misc. example code for testing and demonstrating the methods in this file.
  *
+ * Student Note: The tests are not meant to be comprehensive, but rather only provide examples.  Also,
+ * Mat4_test may include calls to methods & functions not required by your particular assignment in a given
+ * semester.  Edit it as needed.
  */
 function Mat3_test()
 {

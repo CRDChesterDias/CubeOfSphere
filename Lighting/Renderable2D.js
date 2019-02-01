@@ -257,11 +257,12 @@ class Renderable
     }
 
     /* @author Zachary Wartell
-     * render this Renderable
+     * render this Renderable (note, this is an abstract method which must be overridden in derived classes).
+     * @abstract
      */
     render()
     {
-        throw new Error("Unimplemented abstract class method");
+        throw new Error("Abstract class method: this method must be overridden in derived classes and should never be called.");
     }
 }
 
