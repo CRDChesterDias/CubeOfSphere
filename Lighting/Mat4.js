@@ -549,12 +549,12 @@ class Mat4
      * @author Zachary Wartell
      * @description Let M be this Mat4: compute and return the minor, M_ij, of this matrix.
      *
-     * "A minor M_ij the reduced determinant of a determinant expansion that is formed by omitting the
-     *  ith row and jth column of a matrix A."  (see {@link http://mathworld.wolfram.com/Minor.html})
+     * "A minor M_ij is the reduced determinant of a determinant expansion that is formed by omitting the
+     *  ith row and jth column of a matrix M."  (see {@link http://mathworld.wolfram.com/Minor.html})
      *
      * @param {Number} i row to strike out
      * @param {Number} j column to strike out
-     * @return the minor M_ij of this Mat4
+     * @return {Number} the minor M_ij of this Mat4
      */
     minor (i, j)
     {
