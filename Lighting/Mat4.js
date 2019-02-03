@@ -459,7 +459,9 @@ class Mat4
      * @author Zachary Wartell && ..
      * @description  Set this Mat4 to the canonical OpenGL perspective projection matrix based on fovy, aspect, near and far.
      *
-     * (see https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/gluPerspective.xml ).
+     * (see https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/gluPerspective.xml
+     *  Note you may need to test these pages in a several browsers. The pages use MathML, a new WWW standard for displaying math;
+     *  not all browsers support it equally, see [Cite.4])
      *
      * @param {Number} - fovy : angle between the upper and lower sides of the frustum
      * @param {Number} - aspect : aspect ratio of the frustum. (width/height)
@@ -478,7 +480,9 @@ class Mat4
      * @author Zachary Wartell && ...
      *
      * @description Right multiply this matrix by canonical OpenGL lookat view matrix (see
-     * https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/gluLookAt.xml )
+     * https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/gluLookAt.xml
+     *  Note you may need to test these pages in a several browsers. The pages use MathML, a new WWW standard for displaying math;
+     *  not all browsers support it equally, see [Cite.4])
      *
      * @param eyeX the position of the eye point.
      * @param eyeY the position of the eye point.
@@ -545,10 +549,12 @@ class Mat4
      * @author Zachary Wartell
      * @description Let M be this Mat4: compute and return the minor, M_ij, of this matrix.
      *
-     * (see {@link http://mathworld.wolfram.com/Minor.html})
+     * "A minor M_ij the reduced determinant of a determinant expansion that is formed by omitting the
+     *  ith row and jth column of a matrix A."  (see {@link http://mathworld.wolfram.com/Minor.html})
+     *
      * @param {Number} i row to strike out
      * @param {Number} j column to strike out
-     * @return determinant of the minor M_ij of this Mat4
+     * @return the minor M_ij of this Mat4
      */
     minor (i, j)
     {
@@ -560,6 +566,7 @@ class Mat4
     /**
      * @author Zachary Wartell && ..
      * @description  Set this Mat4 to a new matrix equal to cofactor matrix of matrix 'M'
+     * (In some math texts, 'cofactor matrix' is also called the 'matrix of co-factors').
      *
      * See {@link http://mathworld.wolfram.com/Cofactor.html }
      *
@@ -613,7 +620,12 @@ class Mat4
 
     /**
      * @author Zachary Wartell && ...
-     * @description  Set this Mat4 to the standard OpenGL viewing matrix (see https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/gluLookAt.xml )
+     * @description  Set this Mat4 to the standard OpenGL viewing matrix
+     *
+     * (see https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/gluLookAt.xml
+     *  Note you may need to test these pages in a several browsers. The pages use MathML, a new WWW standard for displaying math;
+     *  not all browsers support it equally, see [Cite.4])
+     *
      *
      * @param eyeX the position of the eye point.
      * @param eyeY the position of the eye point.

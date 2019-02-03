@@ -101,7 +101,8 @@ var FSHADER_SOURCE =`
 function main() {
 
     /**
-     * Wartell's Boiler plate section for generating Demo and Skeleton App_Title
+     * Boiler plate section for generating Demo and Skeleton App_Title
+     * (generally these lines need not be modified by students)
      */
     let skeleton = true;
     if (skeleton) {

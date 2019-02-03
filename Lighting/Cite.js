@@ -10,5 +10,7 @@ const Cite =
         /** {@link https://en.wikipedia.org/wiki/Row-_and_column-major_order} */
         2 : "",
         /** {@link https://en.wikibooks.org/wiki/GLSL_Programming/Vector_and_Matrix_Operations} */
-        3 : ""
+        3 : "",
+        /** {@link https://www.w3.org/Math/} */
+        4 : ""
     };
