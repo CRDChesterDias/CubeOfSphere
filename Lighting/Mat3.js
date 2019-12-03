@@ -603,7 +603,7 @@ class Vec3
     dot (v)
     {
         /** @todo [STUDENT] implement if/when needed */
-        return this.array[0]*v.array[0] + this.array[1]*v.array[1] + this.array[2]*v.array[2]
+        return this.array[0]*v.array[0] + this.array[1]*v.array[1] + this.array[2]*v.array[2];
     }
 
 
