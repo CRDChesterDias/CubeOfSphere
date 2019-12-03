@@ -43,8 +43,9 @@ function det3(M_00, M_10, M_20,
               M_01, M_11, M_21,
               M_02, M_12, M_22)
 {
-    /** @todo [STUDENT] REQUIRED: implement */
-    throw new Error("UNIMPLEMENTED FUNCTION");
+    return  M_00 * (M_11 * M_22 - M_21 * M_12) +
+        -M_10 * (M_01 * M_22 - M_02 * M_21) +
+        M_20 * (M_01 * M_12 - M_11 * M_02);
 }
 
 /**
@@ -172,10 +173,19 @@ class Mat3
     {
         if (!(matrix instanceof Mat3))
             throw new Error("Unsupported Type");
-
-        /** @todo [STUDENT] REQUIRED: implement */
-        throw new Error("UNIMPLEMENTED FUNCTION");
-    }
+        else{
+            var row, col;
+            var M  = new Float32Array(9);
+            var M1 = matrix;
+            //algorithm converting the matrix to single dimentionall array and matrix mutiplication
+            for(row = 0; row <= 2; row++){
+                for(col = 0; col <= 2 ;col++){
+                    M[col*3+row] = this.get(row,0) * M1.get(0,col) + this.get(row,1) * M1.get(1,col) + this.get(row,2) * M1.get(2,col);
+                }
+            }   
+        this.array = M;
+        }
+    };
 
     /**
      * @author Zachary Wartell
@@ -193,8 +203,17 @@ class Mat3
     {
         if (!(matrix instanceof Mat3))
             throw new Error("Unsupported Type");
-        /** @todo [STUDENT] implement if/when needed */
-        throw new Error("UNIMPLEMENTED FUNCTION");
+        else{
+            var M  = new Float32Array(9);
+            var M1 = matrix;
+            var row, col;
+            for(row=0;row<=2;row++){
+                for(col=0;col<=2;col++){
+                    M[col*3+row] = M1.get(row,0) * this.get(0,col) + M1.get(row,1) * this.get(1,col) + M1.get(row,2) * this.get(2,col);
+                }
+            }
+        this.array = M;
+        }
     };
 
     /**
@@ -278,7 +297,21 @@ class Mat3
     setScale (scale_factors)
     {
         /** @todo [STUDENT] implement if/when needed */
-        throw new Error("UNIMPLEMENTED FUNCTION");
+        if(scale_factors instanceof Array){
+            var sx=scale_factors[0];
+            var sy=scale_factors[1];
+            this.array[0] = sx;
+            this.array[1] = 0.0;
+            this.array[2] = 0.0;
+            this.array[3] = 0.0;
+            this.array[4] = sy;
+            this.array[5] = 0.0;
+            this.array[6] = 0.0;
+            this.array[7] = 0.0;
+            this.array[8] = 1.0;
+        }
+        else
+            throw new Error("UNIMPLEMENTED FUNCTION");
     };
 
     /**
@@ -295,7 +328,14 @@ class Mat3
     scale (scale_factors)
     {
         /** @todo [STUDENT] REQUIRED: implement */
-        throw new Error("UNIMPLEMENTED FUNCTION");
+        if(scale_factors instanceof Array){
+            var M_s = new Mat3();
+            M_s.setScale(scale_factors);
+            this.multiply(M_s);
+        }
+        else
+            throw new Error("UNIMPLEMENTED FUNCTION");
+
     };
 
     /**
@@ -312,7 +352,13 @@ class Mat3
     leftScale (scale_factors)
     {
         /** @todo [STUDENT] implement if/when needed */
-        throw new Error("UNIMPLEMENTED FUNCTION");
+        if(scale_factors instanceof Array){
+            var M_s = new Mat3();
+            M_s.setScale(scale_factors);
+            this.leftMultiply(M_s);
+        }
+        else
+            throw new Error("UNIMPLEMENTED FUNCTION");
     }
 
     /**
@@ -324,7 +370,16 @@ class Mat3
     setRotate (angle)
     {
         /** @todo [STUDENT] REQUIRED: implement */
-        throw new Error("UNIMPLEMENTED FUNCTION");
+    angle = (Math.PI/180) * angle;
+    this.array[0] = Math.cos(angle);
+    this.array[1] = Math.sin(angle);
+    this.array[2] = 0.0;
+    this.array[3] = -Math.sin(angle);
+    this.array[4] = Math.cos(angle);
+    this.array[5] = 0.0;
+    this.array[6] = 0.0;
+    this.array[7] = 0.0;
+    this.array[8] = 1.0;
     }
 
     /**
@@ -339,7 +394,9 @@ class Mat3
     rotate (angle)
     {
         /** @todo [STUDENT] REQUIRED: implement */
-        throw new Error("UNIMPLEMENTED FUNCTION");
+        var M_r =new Mat3();
+        M_r.setRotate(angle);
+        this.multiply(M_r);
     }
 
     /**
@@ -356,8 +413,11 @@ class Mat3
     leftRotate (angle)
     {
         /** @todo [STUDENT] implement if/when needed */
-        throw new Error("UNIMPLEMENTED FUNCTION");
+        var M_r =new Mat3();
+        M_r.setRotate(angle);
+        this.leftMultiply(M_r);
     }
+    
 
     /**
      * @author Zachary Wartell
@@ -456,7 +516,10 @@ class Vec3
         if (!(M instanceof Mat3))
             throw new Error("Unsupported Type");
         /** @todo [STUDENT] implement if/when needed */
-        throw new Error("UNIMPLEMENTED FUNCTION");
+        else
+            return new Vec([this.array[0] * M.array[0] + this.array[1] * M.array[1] + this.array[2] * M.array[2],
+                        this.array[0] * M.array[3] + this.array[1] * M.array[4] + this.array[2] * M.array[5],
+                        this.array[0] * M.array[6] + this.array[1] * M.array[7] + this.array[2] * M.array[8]]);
     }
     
     /**
@@ -498,13 +561,18 @@ class Vec3
     add (v)
     {
         /** @todo [STUDENT] implement if/when needed */
-        throw new Error("UNIMPLEMENTED FUNCTION");
+        this.array[0] = this.array[0] + v.array[0];
+        this.array[1] = this.array[1] + v.array[1];
+        this.array[2] = this.array[2] + v.array[2];
+        
     }
 
     sub (v)
     {
         /** @todo [STUDENT] implement if/when needed */
-        throw new Error("UNIMPLEMENTED FUNCTION");
+        this.array[0] = this.array[0] - v.array[0];
+        this.array[1] = this.array[1] - v.array[1];
+        this.array[2] = this.array[2] - v.array[2];
     }
 
     /**
@@ -535,7 +603,7 @@ class Vec3
     dot (v)
     {
         /** @todo [STUDENT] implement if/when needed */
-        throw new Error("UNIMPLEMENTED FUNCTION");
+        return this.array[0]*v.array[0] + this.array[1]*v.array[1] + this.array[2]*v.array[2]
     }
 
 

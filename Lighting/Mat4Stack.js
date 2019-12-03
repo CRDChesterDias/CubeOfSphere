@@ -126,7 +126,7 @@ class Mat4Stack
         if (! M instanceof Mat4)
             throw new Error("Unsupported Type");
         /* @todo implement this */
-        throw new Error("UNIMPLEMENTED FUNCTION");
+        this.array[this.array.length-1].multiply(M);
     }
 
     /** @author Zachary Wartell && ..
@@ -136,8 +136,8 @@ class Mat4Stack
     scale (scale_factors)
     {
         /* @todo implement this */
-        throw new Error("UNIMPLEMENTED FUNCTION");
-    }
+       this.array[this.array.length-1].scale(scale_factors);
+        }
 
 
     /** @author Zachary Wartell
@@ -156,15 +156,21 @@ class Mat4Stack
      * @param {Number} - y-coordinate of rotation axis
      * @param {Number} - z-coordinate of rotation axis
      */
+
     rotate (angle, x,y,z)
     {
         /* @todo implement this */
-        throw new Error("UNIMPLEMENTED FUNCTION");
+        this.array[this.array.length-1].rotateY(angle);
     }
+
 
     /** @todo [STUDENT] Add additional methods to Mat4Stack based on the classic OpenGL matrix stack API
      * as you see fit.
-     */    
+     */   
+    rotateZ (angle)
+    {
+        this.array[this.array.length-1].rotateZ(angle);
+    } 
 }
 
 /*****

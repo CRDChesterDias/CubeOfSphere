@@ -113,7 +113,7 @@ function main() {
      *  [DEBUGGING] Run some unit tests
      */
     /* enable for debugging only */
-    if (0) {
+    if (1) {
         /* runs some module unit tests and then exit */
         Mat3_test();
         Mat4_test();

@@ -37,8 +37,31 @@ function det4(M_00, M_10, M_20, M_30,
               M_02, M_12, M_22, M_32,
               M_03, M_13, M_23, M_33)
 {
-    // @todo [STUDENT REQUIRED] implement
-    throw new Error("UNIMPLEMENTED FUNCTION");
+    var val0 = M_00 * det3(M_11, M_21,M_31,
+                           M_12, M_22, M_32,
+                           M_13, M_23, M_33);
+    var val1 = -1 * (M_10 * det3(M_01, M_21, M_31,
+                                 M_02, M_22, M_32, 
+                                 M_03, M_23, M_33));
+    var val2 = M_20 * det3(M_01, M_11, M_31, 
+                           M_02, M_12, M_32, 
+                           M_03, M_13, M_33 );
+    var val3 = -1 * (M_30 * det3(M_01, M_11, M_21, 
+                                 M_02, M_12, M_22, 
+                                 M_03, M_13, M_23 ));
+    var det = val0 + val1 + val2 + val3;
+    return det
+
+}
+
+//Code adapted from previous assignments
+function det3(M_00, M_10, M_20,
+    M_01, M_11, M_21,
+    M_02, M_12, M_22)
+{
+return  M_00 * (M_11 * M_22 - M_21 * M_12) +
+        -M_10 * (M_01 * M_22 - M_02 * M_21) +
+        M_20 * (M_01 * M_12 - M_11 * M_02);
 }
 
 /*
@@ -206,9 +229,21 @@ class Mat4
     {
         if (!(matrix instanceof Mat4))
             throw new Error("Unsupported Type");
+        else{
+            var row, col;
+            var M  = new Float32Array(16);
+            var M1 = matrix;
+            //algorithm converting the matrix to single dimentionall array and matrix mutiplication
+            for(row = 0; row <= 3; row++){
+                for(col = 0; col <= 3;col++){
+                    M[col*4+row] = this.get(row,0) * M1.get(0,col) + this.get(row,1) * M1.get(1,col) + this.get(row,2) * M1.get(2,col)+ this.get(row,3) * M1.get(3,col);
+                }
+            }
+        this.array = M;
+
+        }
 
         // @todo [STUDENT] REQUIRED: implement
-        throw new Error("UNIMPLEMENTED FUNCTION");
     }
     /**
      * @author Zachary Wartell
@@ -226,8 +261,18 @@ class Mat4
     {
         if (!(matrix instanceof Mat4))
             throw new Error("Unsupported Type");
+        else{
+            var M  = new Float32Array(16);
+            var M1 = matrix;
+            var row, col;
+            for(row=0;row<=3;row++){
+                for(col=0;col<=3;col++){
+                    M[col*4+row] = M1.get(row,0) * this.get(0,col) + M1.get(row,1) * this.get(1,col) + M1.get(row,2) * this.get(2,col)+ M1.get(row,3) * this.get(3,col);
+                }
+            }
+        this.array = M;
+        }   
         // @todo [STUDENT] (as needed) implement
-        throw new Error("UNIMPLEMENTED FUNCTION");
     }
 
     /**
@@ -316,7 +361,14 @@ class Mat4
     setScale (scale_factors)
     {
         /** @todo [STUDENT] REQUIRED: implement */
-        throw new Error("UNIMPLEMENTED FUNCTION");
+        if (scale_factors instanceof Array)
+        {
+            this.array[0] = scale_factors[0];  this.array[4] = 0.0;  this.array[8]  = 0.0; this.array[12] = 0.0;
+            this.array[1] = 0.0;  this.array[5] = scale_factors[1];  this.array[9]  = 0.0; this.array[13] = 0.0;
+            this.array[2] = 0.0;  this.array[6] = 0.0;  this.array[10] = scale_factors[2]; this.array[14] = 0.0;
+            this.array[3] = 0.0;  this.array[7] = 0.0;  this.array[11] = 0.0; this.array[15] = 1.0;
+        } else
+            throw new Error("Unsupported Type");
     }
 
     /**
@@ -336,7 +388,13 @@ class Mat4
         /** @todo [STUDENT] REQUIRED: implement
            @hint follow design pattern of Mat4.prototype.translate
         * */
-        throw new Error("UNIMPLEMENTED FUNCTION");
+        if (scale_factors instanceof Array && scale_factors.length === 3)
+        {
+            const M_s = new Mat4();
+            M_s.setScale(scale_factors);
+            this.multiply(M_s);
+        } else
+            throw new Error("Unsupported Type");
     }
 
     /**
@@ -358,7 +416,13 @@ class Mat4
         /** @todo [STUDENT] implement (as needed)
        * Hint: follow design pattern of {@link Mat4.leftTranslate}
        * */
-        throw new Error("UNIMPLEMENTED FUNCTION");
+         if (scale_factors instanceof Array && scale_factors.length === 3)
+        {
+            const M_s = new Mat4();
+            M_s.setTranslate(scale_factors);
+            this.leftMultiply(M_s);
+        } else
+            throw new Error("Unsupported Type");
     }
 
     /**
@@ -422,6 +486,31 @@ class Mat4
 
     /**
      * @author Zachary Wartell && ..
+     * @description  Right multiply this Mat4 by the 3D rotation matrix that rotates by angle 'angle' around Z axis, e.g.
+     * in mathematical notation, let M equal this Mat4, and 'M_r' equal the rotation matrix:
+     *
+     *      M' = M * M_r
+     *
+     * @param {Number} angle angle in degrees
+     */
+    rotateZ (angle)
+    {
+        //as per slide 12
+        const a = angle * (Math.PI / 180),
+            c = Math.cos(a),
+            s = Math.sin(a);
+         // Note: [STUDENT] generally you should follow the approach below (it's the 'easy way' for handling the "right side multiply" functions)
+            const M = new Mat4(      // note the column-order convention makes this look incorrect (like the transpose of the desired matrix)
+                [ c,  s,   0.0, 0.0,
+                 -s,  c,   0.0, 0.0,
+                 0.0, 0.0, 1.0, 0.0,
+                 0.0, 0.0, 0.0, 1.0]);
+            this.multiply(M);
+        
+    }
+
+    /**
+     * @author Zachary Wartell && ..
      * @description  Left multiply this Mat4 by the 3D rotation matrix that rotates by angle 'angle' around axis Z, e.g.
      * in mathematical notation, let M equal this Mat4, and 'M_r' equal the rotation matrix:
      *
@@ -436,7 +525,43 @@ class Mat4
         /** @todo [STUDENT] implement (as needed)
          *  @hint follow design pattern of Mat4.leftTranslate
          */
-        throw new Error("UNIMPLEMENTED FUNCTION");
+        const a = angle * (Math.PI / 180),
+            c = Math.cos(a),
+            s = Math.sin(a);
+
+        const M = new Mat4(      // note the column-order convention makes this look incorrect (like the transpose of the desired matrix)
+                [c,   0.0,  -s, 0.0,
+                 0.0, 1.0, 0.0, 0.0,
+                 s,   0.0,   c, 0.0,
+                 0.0, 0.0, 0.0, 1.0]);
+            this.leftMultiply(M);
+    }
+
+    /**
+     * @author Zachary Wartell && ..
+     * @description  Left multiply this Mat4 by the 3D rotation matrix that rotates by angle 'angle' around axis Z, e.g.
+     * in mathematical notation, let M equal this Mat4, and 'M_r' equal the rotation matrix:
+     *
+     *      M' = M_r * M
+     *
+     * @see comment on Mat4.prototype.leftMultiply
+     *
+     * @param {Number} angle - measured in degrees
+     */
+    leftRotateZ (angle)
+    {
+        //Additional CODE to satisfy test cases
+        //as per slide 12
+        const a = angle * (Math.PI / 180),
+            c = Math.cos(a),
+            s = Math.sin(a);
+         // Note: [STUDENT] generally you should follow the approach below (it's the 'easy way' for handling the "right side multiply" functions)
+            const M = new Mat4(      // note the column-order convention makes this look incorrect (like the transpose of the desired matrix)
+                [ c,  s,   0.0, 0.0,
+                 -s,  c,   0.0, 0.0,
+                 0.0, 0.0, 1.0, 0.0,
+                 0.0, 0.0, 0.0, 1.0]);
+            this.leftMultiply(M);
     }
 
     /**
@@ -501,6 +626,7 @@ class Mat4
         *  @hint see Mat4.setLookAt and follow design pattern of Mat4.translate
         **/
         throw new Error("UNIMPLEMENTED FUNCTION");
+
     }
 
     /**
@@ -523,7 +649,16 @@ class Mat4
         /** @todo [STUDENT] REQUIRED: implement
         *  Hint: see class lecture material, "ITCS 4120-3D Transforms.ppt" - "Rotation About An Arbitrary Axis"
         * */
-        throw new Error("UNIMPLEMENTED FUNCTION");
+        
+        //As per slide 23
+        var angleRadians=(Math.PI/180) * angle;
+        var cosComp = Math.cos(angleRadians);
+        var sinComp = Math.sin(angleRadians);
+        var oneMCosComp = 1 - cosComp;
+        this.array[0] = x*x*oneMCosComp + cosComp; this.array[1] = x*y*oneMCosComp - z*sinComp; this.array[2] = x*z*oneMCosComp + y*sinComp; this.array[3] = 0.0;
+        this.array[4] = y*x*oneMCosComp + z*s; this.array[5] = y*y*oneMCosComp + cosComp; this.array[6] = y*z*oneMCosComp - x*sinComp; this.array[7] = 0.0;
+        this.array[8] = z*x*oneMCosComp - y*s; this.array[9] = z*y*oneMCosComp + x*sinComp; this.array[10] = z*z*ooneMCosCompmc + cosComp; this.array[11] = 0.0;
+        this.array[12] = 0.0; this.array[13] = 0.0; this.array[14] = 0.0; this.array[15] = 1.0;
     }
 
     /**
@@ -542,7 +677,9 @@ class Mat4
         /** @todo [STUDENT] REQUIRED: implement
         *  Hint: follow pattern of Mat4.prototype.translate
         * */
-        throw new Error("UNIMPLEMENTED FUNCTION");
+        const matrix = Mat4();
+        matrix.setRotate(angle,x,y,z);
+        this.multiply(matrix);
     }
 
     /**
@@ -559,8 +696,91 @@ class Mat4
     minor (i, j)
     {
         /* @todo [STUDENT] REQUIRED: implement
-        * */
-        throw new Error("UNIMPLEMENTED FUNCTION");
+        */
+        var minorVal;
+        switch(i+"|"+j){
+            case "0|0":
+                minorVal = det3(this.array[5], this.array[6], this.array[7],
+                               this.array[9],this.array[10], this.array[11],
+                                this.array[13],this.array[14], this.array[15]);
+                break;
+            case "0|1":
+                minorVal = det3(this.array[5], this.array[6], this.array[7],
+                                this.array[9],this.array[10], this.array[11],
+                                this.array[13],this.array[14], this.array[15]);
+                break;
+            case "0|2":
+                minorVal = det3(this.array[4], this.array[5], this.array[7],
+                                this.array[8],this.array[10], this.array[11],
+                                this.array[12],this.array[13], this.array[15])
+                break;
+            case "0|3":
+                minorVal = det3(this.array[4], this.array[5], this.array[6],
+                                this.array[8],this.array[9], this.array[10],
+                                this.array[12],this.array[13], this.array[14])
+                break;
+            case "1|0":
+                minorVal = det3(this.array[1], this.array[2], this.array[3],
+                                this.array[9],this.array[10], this.array[11],
+                                this.array[13],this.array[14], this.array[15])
+                break;
+            case "1|1":
+                minorVal = det3(this.array[0], this.array[2], this.array[3],
+                                this.array[8],this.array[10], this.array[11],
+                                this.array[12],this.array[14], this.array[15])
+                break;
+            case "1|2":
+                minorVal = det3(this.array[0], this.array[1], this.array[3],
+                                this.array[8],this.array[9], this.array[11],
+                                this.array[12],this.array[13], this.array[15])
+                break;
+            case "1|3":
+                minorVal = det3(this.array[0], this.array[1], this.array[2],
+                                this.array[8],this.array[9], this.array[10],
+                                this.array[12],this.array[13], this.array[14])
+                break;
+            case "2|0":
+                minorVal = det3(this.array[1], this.array[2], this.array[3],
+                                this.array[5],this.array[6], this.array[7],
+                                this.array[13],this.array[14], this.array[15])
+                break;
+            case "2|1":
+                minorVal = det3(this.array[0], this.array[2], this.array[3],
+                                this.array[4],this.array[6], this.array[7],
+                                this.array[12],this.array[14], this.array[15])
+                break;
+            case "2|2":
+                minorVal = det3(this.array[0], this.array[1], this.array[3],
+                                this.array[4],this.array[5], this.array[7],
+                                this.array[12],this.array[13], this.array[15])
+                break;
+            case "2|3":
+                minorVal = det3(this.array[0], this.array[1], this.array[2],
+                                this.array[4],this.array[5], this.array[6],
+                                this.array[12],this.array[13], this.array[14])
+                break;
+            case "3|0":
+                minorVal = det3(this.array[1], this.array[2], this.array[3],
+                                this.array[5],this.array[6], this.array[7],
+                                this.array[9],this.array[10], this.array[11])
+                break;
+            case "3|1":
+                minorVal = det3(this.array[0], this.array[2], this.array[3],
+                                this.array[4],this.array[6], this.array[7],
+                                this.array[8],this.array[10], this.array[11])
+                break;
+            case "3|2":
+                minorVal = det3(this.array[0], this.array[1], this.array[3],
+                                this.array[4],this.array[5], this.array[7],
+                                this.array[8],this.array[9], this.array[11])
+                break;
+            case "3|3":
+                minorVal = det3(this.array[0], this.array[1], this.array[2],
+                                this.array[4],this.array[5], this.array[6],
+                                this.array[8],this.array[9], this.array[10])
+                break;
+        }
+        return minorVal;
     }
 
     /**
@@ -579,7 +799,12 @@ class Mat4
         *    - utilize Mat4.prototype.minor
         *    - use the cofactor definition in class (see also http://mathworld.wolfram.com/Cofactor.html)
         * */
-        throw new Error("UNIMPLEMENTED FUNCTION");
+        var row, col
+        for(row = 0; row <= 3; row++){
+                for(col = 0; col <= 3;col++){
+                    M.array[col*4+row] = M.minor(row,col)*Math.pow(-1, row+col);
+                }
+            }
     }
     /**
      * @author Zachary Wartell && ..
@@ -594,7 +819,31 @@ class Mat4
         Hint: leverage Mat4.prototype.setCofactorMatrix, etc., using mathematical definition of matrix inverse given in class
         ("ITCS 4120 - 2D Coordinates.ppt")
         */
-        throw new Error("UNIMPLEMENTED FUNCTION");
+        var det = det4(M.array[0],M.array[1],M.array[2],M.array[3],
+                    M.array[4], M.array[5],M.array[6],M.array[7],
+                    M.array[8],M.array[9],M.array[10],M.array[11],
+                    M.array[12],M.array[13],M.array[14],M.array[15]);
+        M.setCofactorMatrix(M);
+        this.array[0] = M.array[0] / det; 
+        this.array[4] = M.array[1] / det; 
+        this.array[8] = M.array[2] / det; 
+        this.array[12] = M.array[3] / det;
+
+        this.array[1] = M.array[4] / det; 
+        this.array[5] = M.array[5] / det; 
+        this.array[9] = M.array[6] / det; 
+        this.array[13] = M.array[7] / det;
+
+        this.array[2] = M.array[8] / det; 
+        this.array[6] = M.array[9] / det; 
+        this.array[10] = M.array[10] / det; 
+        this.array[14] = M.array[11] / det;
+
+        this.array[3] = M.array[12] / det; 
+        this.array[7] = M.array[13] / det; 
+        this.array[11] = M.array[14] / det; 
+        this.array[15] = M.array[15] / det;
+
     }
 
     /** Zachary Wartell && ..
@@ -615,7 +864,14 @@ class Mat4
     transpose()
     {
         /** @todo [STUDENT] REQUIRED: implement */
-        throw new Error("UNIMPLEMENTED FUNCTION");
+        var temp;
+
+        temp = this.array[1];  this.array[1] = this.array[4];  this.array[4] = temp;
+        temp = this.array[2];  this.array[2] = this.array[8];  this.array[8] = temp;
+        temp = this.array[3];  this.array[3] = this.array[12];  this.array[12] = temp;
+        temp = this.array[6];  this.array[6] = this.array[9];  this.array[9] = temp;
+        temp = this.array[7];  this.array[7] = this.array[13];  this.array[13] = temp;
+        temp = this.array[11];  this.array[11] = this.array[14];  this.array[14] = temp;
     }
 
     /**
@@ -705,7 +961,10 @@ class Vec4
         if (!(M instanceof Mat4))
             throw new Error("Unsupported Type");
         // @todo [STUDENT] REQUIRED: implement
-        throw new Error("UNIMPLEMENTED FUNCTION");
+        this.array.set([this.array[0] * M.array[0] + this.array[1] * M.array[4] + this.array[2] * M.array[8] + this.array[3] * M.array[12],
+                        this.array[0] * M.array[1] + this.array[1] * M.array[5] + this.array[2] * M.array[9] + this.array[3] * M.array[13],
+                        this.array[0] * M.array[2] + this.array[1] * M.array[6] + this.array[2] * M.array[10] + this.array[3] * M.array[14],
+                        this.array[0] * M.array[3] + this.array[1] * M.array[7] + this.array[2] * M.array[11] + this.array[3] * M.array[15]]);
     }
 
     /**
@@ -724,7 +983,10 @@ class Vec4
         if (!(M instanceof Mat4))
             throw new Error("Unsupported Type");
         // @todo [STUDENT] implement (as needed)
-        throw new Error("UNIMPLEMENTED FUNCTION");
+        return new Vec([this.array[0] * M.array[0] + this.array[1] * M.array[4] + this.array[2] * M.array[8] + this.array[3] * M.array[12],
+                        this.array[0] * M.array[1] + this.array[1] * M.array[5] + this.array[2] * M.array[9] + this.array[3] * M.array[13],
+                        this.array[0] * M.array[2] + this.array[1] * M.array[6] + this.array[2] * M.array[10] + this.array[3] * M.array[14],
+                        this.array[0] * M.array[3] + this.array[1] * M.array[7] + this.array[2] * M.array[11] + this.array[3] * M.array[15]])
     }
 
     /**
@@ -918,6 +1180,6 @@ function Mat4_test()
     M7.setCofactorMatrix(M6);
     var M6_cf = new Mat4([2, 2, -3, 4, -11, 6,-3, 6, -3]);
     /* @todo add more tests as needed */
-    console.log("Mat4_test");
+    console.log("Mat4_test cases Passed");
     return;
 }
