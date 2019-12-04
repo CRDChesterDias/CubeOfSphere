@@ -656,8 +656,8 @@ class Mat4
         var sinComp = Math.sin(angleRadians);
         var oneMCosComp = 1 - cosComp;
         this.array[0] = x*x*oneMCosComp + cosComp; this.array[1] = x*y*oneMCosComp - z*sinComp; this.array[2] = x*z*oneMCosComp + y*sinComp; this.array[3] = 0.0;
-        this.array[4] = y*x*oneMCosComp + z*s; this.array[5] = y*y*oneMCosComp + cosComp; this.array[6] = y*z*oneMCosComp - x*sinComp; this.array[7] = 0.0;
-        this.array[8] = z*x*oneMCosComp - y*s; this.array[9] = z*y*oneMCosComp + x*sinComp; this.array[10] = z*z*ooneMCosCompmc + cosComp; this.array[11] = 0.0;
+        this.array[4] = y*x*oneMCosComp + z*sinComp; this.array[5] = y*y*oneMCosComp + cosComp; this.array[6] = y*z*oneMCosComp - x*sinComp; this.array[7] = 0.0;
+        this.array[8] = z*x*oneMCosComp - y*sinComp; this.array[9] = z*y*oneMCosComp + x*sinComp; this.array[10] = z*z*ooneMCosCompmc + cosComp; this.array[11] = 0.0;
         this.array[12] = 0.0; this.array[13] = 0.0; this.array[14] = 0.0; this.array[15] = 1.0;
     }
 
