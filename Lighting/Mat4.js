@@ -598,7 +598,15 @@ class Mat4
     {
         /** @todo [STUDENT] REQUIRED: implement
         **/
-        throw new Error("UNIMPLEMENTED FUNCTION");
+        fovy = (Math.PI * fovy /360) ;
+        var sinComp = Math.sin(fovy);
+        var cotComp = Math.cos(fovy) / sinComp;
+        var fmn = 1/(far-near);
+
+        this.array[0] = cotComp/aspect; this.array[1] = 0.0;       this.array[2] = 0.0;                       this.array[3] = 0.0;
+        this.array[4] = 0.0;            this.array[5] = cotComp;   this.array[6] = 0.0;                       this.array[7] = 0.0;
+        this.array[8] = 0.0;            this.array[9] = 0.0;       this.array[10] = -1 * (far + near) * fmn; this.array[11] = -1;
+        this.array[12] = 0.0;           this.array[13] = 0.0;      this.array[14] = -2 * near * far * fmn; this.array[15] = 1.0;
     }
 
     /**
@@ -625,8 +633,9 @@ class Mat4
         /* @todo [STUDENT] REQUIRED: implement
         *  @hint see Mat4.setLookAt and follow design pattern of Mat4.translate
         **/
-        throw new Error("UNIMPLEMENTED FUNCTION");
-
+        const M_l = new Mat4();
+        M_l.setLookAt(eyeX, eyeY, eyeZ, centerX, centerY, centerZ, upX, upY, upZ);
+        this.multiply(M_l);
     }
 
     /**
@@ -897,7 +906,27 @@ class Mat4
     setLookAt(eyeX, eyeY, eyeZ, centerX, centerY, centerZ, upX, upY, upZ)
     {
     /** @todo [STUDENT] REQUIRED: implement */
-    throw new Error("UNIMPLEMENTED FUNCTION");
+        //forward x,y,z
+        var fx = centerX - eyeX;
+        var fy = centerY - eyeY;
+        var fz = centerZ - eyeZ;
+
+        //side
+        var sx = fy * upZ - fz * upY;
+        var sy = fz * upX - fx * upZ;
+        var sz = fx * upY - fy * upX;
+
+        //up
+        var ux = sy * fz - sz * fy;
+        var uy = sz * fx - sx * fz;
+        var uz = sx * fy - sy * fx;
+
+        this.array[0] = sx; this.array[1] = ux; this.array[2] = -fx; this.array[3] = 0.0;
+        this.array[4] = sy; this.array[5] = uy; this.array[6] = -fy; this.array[7] = 0.0;
+        this.array[8] = sz; this.array[9] = uz; this.array[10] = -fz; this.array[11] = 0.0;
+        this.array[12] = 0.0; this.array[13] = 0.0;  this.array[14] = 0.0; this.array[15] = 1.0;
+
+
     }
 }
 
