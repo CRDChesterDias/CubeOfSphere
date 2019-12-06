@@ -25,6 +25,8 @@ function generate_sphere(divisions,positions, indices) {
      The easiest approach is to create the indices assuming rendering will be done with GL_TRIANGLES.
      */
 
+     //Code addapted from the PointLightedSphere_perFragment.js
+
     var SPHERE_DIV = divisions;
 
 	var i, ai, si, ci;
