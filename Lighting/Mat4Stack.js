@@ -160,7 +160,7 @@ class Mat4Stack
     rotate (angle, x,y,z)
     {
         /* @todo implement this */
-        this.array[this.array.length-1].rotateY(angle);
+         this.array[this.array.length-1].rotate(angle, x,y,z);
     }
 
 
