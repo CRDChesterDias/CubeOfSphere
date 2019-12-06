@@ -46,7 +46,7 @@ function equalfd(a,b)
  */
 function minorIndices(rows,columns,i,j)
 {
-
+ ////Not USED ANYWHERE BUT A IMPLEMENTATION OF MINOR FOR A 4*4 is in Mat4
 }
 
 /**
@@ -63,8 +63,7 @@ function det2(M_00, M_10,
               M_01, M_11)
 {
     // @todo [STUDENT REQUIRED] implement
-    throw new Error("UNIMPLEMENTED FUNCTION");
-}
+    return M_00 * M_11 - M_01 * M_10;
 
 
 /**
@@ -222,7 +221,7 @@ class Vec2
         /*
          * @todo needs to be implemented
          */
-        throw new Error("UNIMPLEMENTED FUNCTION");
+        this.array.set([this.array[0] - v1.array[0], this.array[1] - v1.array[1]]);
     }
     
     /**
@@ -265,7 +264,7 @@ class Vec2
         /*
          * @todo needs to be implemented
          */
-        throw new Error("UNIMPLEMENTED FUNCTION");
+       return this.array[0]*v.array[0] + this.array[1]*v.array[1];
         return 0;
     }
     
@@ -279,8 +278,8 @@ class Vec2
         /*
          * @todo needs to be implemented
          */
-        throw new Error("UNIMPLEMENTED FUNCTION");
-        return 0;
+        
+        return return Math.sqrt(this.x * this.x + this.y * this.y);;
     }
 
     /**
