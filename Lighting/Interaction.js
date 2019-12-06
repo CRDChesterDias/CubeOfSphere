@@ -23,4 +23,28 @@
  * @param {Number[]} currentAngle - Array of 2 numbers contain x-axis and y-axis rotation angles
  **/
 function mouseRotation_initEventHandlers(canvas, currentAngle) {
+	var isClicked = false;
+	canvas.onmousedown = function (event) { 
+        var x = event.clientX, y = event.clientY;
+        isClicked = true;
+    };
+
+    canvas.onmouseup = function (event) {
+        isClicked = false;
+    }; 
+
+    canvas.onmousemove = function (event) { 
+        var x = event.clientX, y = event.clientY;
+        if (isClicked) {
+           	var factor = 150 / canvas.height;
+            
+            //delta computation
+            var dx = factor * (x - lastX);
+            var dy = factor * (y - lastY);
+            currentAngle[0] = Math.max(Math.min(currentAngle[0] + dy, 90.0), -90.0);
+            currentAngle[1] = currentAngle[1] + dx;
+        }
+        lastX = x;
+        lastY = y;
+    };
 }
