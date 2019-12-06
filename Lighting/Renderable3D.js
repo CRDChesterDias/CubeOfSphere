@@ -59,8 +59,8 @@ class Shader3D extends Shader
         /*
          *  get GL shader variable locations
          */
-        this.a_Position = checked_getAttribLocation(gl,this.program, 'a_Position');
-
+        this.a_Position = checked_getAttribLocation(gl,this.program, 'a_Position');        
+        
         /*
          *  This uniform is designed to be manipulated by a Mat4Stack Object, rather than
          *  directly by methods in class Shader3D or it's sub-class
@@ -175,13 +175,13 @@ class Renderable3D extends Renderable
 
         // compute modelViewProjectionMatrix matrix
         modelViewProjectionMatrix = projection3DStack.top();
-        //modelViewProjectionMatrix.multiply(modelViewMatrix);  // @todo [STUDENT] REQUIRED: enable this code after implementing Mat4.js
+        modelViewProjectionMatrix.multiply(modelViewMatrix);  // @todo [STUDENT] REQUIRED: enable this code after implementing Mat4.js
 
         // compute normal vector transform matrix
         //   (The reason for using inverse-transpose is discussed in class, textbook, etc.)
         //  @todo [STUDENT] REQUIRED: enable code below after implementing Mat4.js.
-        //normalMatrix.setInverseOf(modelViewMatrix);
-        //normalMatrix.transpose();
+        normalMatrix.setInverseOf(modelViewMatrix);
+        normalMatrix.transpose();
 
         // Pass the model view projection matrices to corresponding GLSL uniforms
         gl.uniformMatrix4fv(this.shader.u_ModelViewMatrix, false, modelViewMatrix.array);
@@ -220,11 +220,12 @@ class LitRenderable3D extends Renderable3D
          Enable this.shader's GLSL program and set the GLSL uniform variables that are inherited from Renderable3D
          */
         Renderable3D.prototype.render_begin.call(this);
-
         /*
          Set the GLSL uniform variables that are added by LitRenderable3D
          */        
         const gl = this.shader.gl;
+               // gl.vertexAttrib4f(this.shader.a_Color, 1.0, 0.0, 0.0, 1.0)
+
 
         // set the additional GLSL uniform, attribute, and varying variables specific to LitRenderable3D
         gl.uniform3f(this.shader.u_LightColor, 0.8, 0.8, 0.8);
@@ -427,4 +428,154 @@ class LitBox_Beta extends LitRenderable3D
  * into your Sphere class in order to get started. Significant modifications and additional will be needed.
  */
 class Sphere extends LitRenderable3D {
+
+    /**
+     * @author Zachary Wartlel
+     * @description construct this LixBox
+     * @param {Object} shader - a LitShader3D (or sub-class)
+     */
+    constructor(shader)
+    {
+        super(shader);
+
+        const gl = shader.gl;
+        /*
+         *  create GL buffers (but don't transfer data into it, see updateBuffers).
+         */
+        this.vertexBuffer = gl.createBuffer();
+        if (!this.vertexBuffer) {
+            alert('Failed to create the buffer object');
+            throw new ShaderException();
+        }
+        
+        this.normalBuffer = gl.createBuffer();
+        if (!this.normalBuffer) {
+            alert('Failed to create the buffer object');
+            throw new ShaderException();
+        }
+
+        this.indexBuffer = gl.createBuffer();
+        if (!this.indexBuffer) {
+            console.log('Failed to create the buffer object');
+            throw new ShaderException();
+        }
+
+        /*
+         *  Initialize JS arrays with vertices attributes
+         */
+        // create box vertices (relatively easy if you draw a picture first)
+        var a = generate_sphere(13, [], []);
+        this.vertices = a[0];
+        this.indices = a[1];
+        
+        // create normals (actually for a box these should _not_ be done per vertex, but done per face instead
+        // but the per vertex option is hard coded in the GLSL shader program because it is easier to extend to
+        // 'smooth' surfaces like a sphere).
+        this.normals = [];
+        for(let i=0;i<this.vertices.length;i++)
+        {
+            let n = new Vec3(this.vertices[i], this.vertices[i+1], this.vertices[i+2]);
+            n.normalize();
+            this.normals.push([n.x,n.y,n.z]);
+        }
+        /*
+         *  Update WebGL buffers with above JS array vertex attributes
+         */
+        this.updateBuffers ();
+    }
+
+    /** @author Zachary Wartell
+     * @description update the GL buffers based on the current JS vertex data
+     *
+     * updateBuffers only has to be called if/when the JS vertex data changes.
+     * (Further, for GL efficiency it should only be called when needed).
+     *
+     * @preconditions:  vertex buffer are already created
+     */
+    updateBuffers ()
+    {
+        const gl = this.shader.gl;
+
+        // update vertex buffer
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+        // copy vertex data into ARRAY_BUFFER
+        gl.bufferData(gl.ARRAY_BUFFER, flatten(this.vertices), gl.STATIC_DRAW);
+
+        // update normal buffer
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.normalBuffer);
+        // copy vertex data into ARRAY_BUFFER
+        gl.bufferData(gl.ARRAY_BUFFER, flatten(this.normals), gl.STATIC_DRAW);
+
+        // update index buffer
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.indices.flat(1)), gl.STATIC_DRAW);
+    }
+
+    /** @author Zachary Wartell
+     * @description render this LitBox (subject to the current transformations on the two global Mat4Stack's).
+     */
+     render()
+    {
+        /*
+         enable GLSL program and setup common uniforms
+         */
+        LitRenderable3D.prototype.render_begin.call(this);
+
+        const gl=this.shader.gl;
+
+        /*
+         setup uniforms added by LitRenderable3D
+
+         As a quick hack I hard code these here... other sub-classes of LitRenderable3D should
+         be better designed and assign these uniform's by adding properties to the sub-class, etc.
+         */
+        gl.uniform3f(this.shader.u_LightColor, 0.8, 0.8, 0.8);
+        // set the light direction (in the world coordinate)
+        gl.uniform3fv(this.shader.u_LightPosition_ecs, [0.3,0.3,0.8]);   // note because NDC is left-handed the front face is on negative z-axis
+        // set the ambient light
+        gl.uniform3f(this.shader.u_AmbientLight, 0.5, 0.5, 0.5);///gray color
+        gl.uniform3fv(this.shader.u_AmbientReflection, [0.5,0.5,0.5]);
+
+        // set the material properties
+
+        gl.uniform3fv(this.shader.u_DiffuseReflection, [0.8,0.0,1]);
+        //gl.vertexAttrib4f(this.shader.a_Color, 1.0, 1.0, 1.0, 1.0)
+        /*
+         * @todo [STUDENT] Optional: after you add the required features to the GLSL shaders, you might want to add
+         * appropriate calls here to set the additional GLSL uniforms you added to the shaders. This is only necessary if you
+         * want to render a LitBox after you update the shaders.
+         */
+        gl.uniform3f(this.shader.u_Emission, 1.0, 0.0, 1.0);
+       // gl.uniform3f(this.shader.u_SpecularReflection, 0.0, 0.0, 0.0);
+        //gl.uniform1f(this.shader.u_SpecExponent, 0.0)
+        /*
+         setup vertex attributes and index buffer
+         */
+        gl.disable(gl.CULL_FACE);
+
+        // bind the vertex buffer to the GL ARRAY_BUFFER
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+
+        // use the vertexBuffer for the vertex attribute variable 'a_Position'
+        gl.vertexAttribPointer(this.shader.a_Position, 3, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(this.shader.a_Position);
+
+        // bind the normal buffer to the GL ARRAY_BUFFER
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.normalBuffer);
+
+        // use the vertexBuffer for the vertex attribute variable 'a_Position'
+        gl.vertexAttribPointer(this.shader.a_Normal, 3, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(this.shader.a_Normal);
+
+        // bind index buffer
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+
+        /*
+         draw primitives
+
+         ZJW: Note, I use TRIANGLE_FAN for the LitBox. For your Sphere class it may be simpler to just use TRIANGLES.
+         The choice is yours.  For the Curious:  The most performance optimal choice would be TRIANGLE_STRIP.
+         */
+        gl.drawElements(gl.TRIANGLES, this.indices.length, gl.UNSIGNED_SHORT, 0);
+    }
 }

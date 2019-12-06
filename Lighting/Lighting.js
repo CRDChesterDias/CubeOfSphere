@@ -28,7 +28,7 @@ var repaint;
  */
 var VSHADER_SOURCE =`
   attribute vec4 a_Position;      
-  attribute vec4 a_Normal;  
+  attribute vec4 a_Normal;
   
   uniform mat4 u_ModelViewMatrix; // ModelView matrix
   uniform mat4 u_ModelViewProjectionMatrix; // ModelViewProjectionMatrix (= ProjectionMatrix * ModelViewMatrix)
@@ -43,7 +43,7 @@ var VSHADER_SOURCE =`
     
     // Calculate the vertex position in OpenGL Eye (akka 'view') coordinates
     v_Position_ecs = vec3(u_ModelViewMatrix * a_Position);
-    v_Normal_ecs = normalize(vec3(u_NormalMatrix * a_Normal));         
+    v_Normal_ecs = normalize(vec3(u_NormalMatrix * a_Normal));  
   }  
 `;
 
@@ -73,7 +73,7 @@ var FSHADER_SOURCE =`
     
   varying vec3 v_Normal_ecs;    // interpolated normal   of fragment in OpenGL eye coordinates 
   varying vec3 v_Position_ecs;  // interpolated position of fragment in OpenGL eye coordinates
-    
+  
   void main() {
     // Normalize the normal because it is interpolated and not 1.0 in length any more
     vec3 normal = normalize(v_Normal_ecs);
@@ -82,7 +82,7 @@ var FSHADER_SOURCE =`
     vec3 lightDirection = normalize(u_LightPosition_ecs - v_Position_ecs);
     
     // The dot product of the light direction and the normal
-    float nDotL = dot(lightDirection, normal);
+    float nDotL = max(dot(lightDirection, normal), 0.0);
     
     vec3 diffuse;
     if (nDotL > 0.0)    
@@ -93,7 +93,7 @@ var FSHADER_SOURCE =`
         
     vec3 ambient = u_AmbientLight * u_AmbientReflection.rgb;
          
-    gl_FragColor = vec4(diffuse + ambient, 1);
+    gl_FragColor = vec4(diffuse + ambient + u_Emission , 1);
   }
 `;
 
@@ -113,7 +113,7 @@ function main() {
      *  [DEBUGGING] Run some unit tests
      */
     /* enable for debugging only */
-    if (1) {
+    if (0) {
         /* runs some module unit tests and then exit */
         Mat3_test();
         Mat4_test();
@@ -134,7 +134,8 @@ function main() {
     }
 
     const litShader3D = new LitShader3D(gl, VSHADER_SOURCE, FSHADER_SOURCE, true);
-    const litBox = new LitBox_Beta(litShader3D);
+   // const litBox = new LitBox_Beta(litShader3D);
+    const litSphere =  new Sphere(litShader3D);
 
     // Set the clear color and enable the depth test
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -144,7 +145,7 @@ function main() {
         startLightPosition = new Vec4(0, 0, 10, 1),
         lightPosition = new Vec4(startLightPosition);
 
-    const lightColor = [0.8, 0.8, 0.8];  // Set the light color (white)
+    const lightColor = [0.8,0.3, 0.0];  // Set the light color (white)
 
     const world_to_eye = new Mat4();     // M_eye<-world transform (akka world to eye); used to map lightPosition from world to eye space
 
@@ -218,38 +219,31 @@ function main() {
 
             // Clear color and depth buffer
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-            // set the Projection matrix
-            let projectionMatrix = new Mat4();
             /*
             *  @todo [STUDENT] after implementing Mat4.js, enable the next line (this is a canonical place to set the projection matrix)
             */
-            //projectionMatrix.setPerspective(30, canvas.width/canvas.height, 1, 100);
-            projection3DStack.loadMatrix(projectionMatrix);
 
             // reset the model view matrix
             modelView3DStack.loadIdentity();
-
-
-
             // rotate the view based on current values of currentAngle[]
             // @todo [STUDENT] REQUIRED: add code here to update eye and upVector variables based on angles in global variable currentAngle[]
-
-            // compute viewMatrix (i.e. OpenGL world to OpenGL Eye transform)
             let viewMatrix = new Mat4();
             viewMatrix.setIdentity();
+            //viewMatrix.lookAt(eye.x, eye.y, eye.z, 0, 0, 0, upVector.x, upVector.y, upVector.z);
+
+            // compute viewMatrix (i.e. OpenGL world to OpenGL Eye transform)
             /*
             *  @todo [STUDENT] after implementing Mat4.js, this is a canonical place to compute the view matrix
             *  and update the modelView stack; hence, enable next line after completing Mat4.js
             */
-            // viewMatrix.lookAt(eye.x, eye.y, eye.z, 0, 0, 0, upVector.x, upVector.y, upVector.z);
-
             // put view matrix on modelView stack
             modelView3DStack.loadMatrix(viewMatrix);
             world_to_eye.set(viewMatrix); // remember world_to_eye transform (it will be needed later for converting light's position to OpenGL Eye space)
 
             // auto rotate view about world y-axis
             modelView3DStack.rotateY(scene.angle);
+            modelView3DStack.rotate(currentAngle[0], 1.0, 0.0, 0.0);
+            modelView3DStack.rotate(currentAngle[1], 0.0, 1.0, 0.0);
 
             // render all Renderable3D objects and do all WebGL drawing..
             /**
@@ -259,13 +253,162 @@ function main() {
              *    @todo [STUDENT] REQUIRED: replace this next line with pile of code that renders the cube of spheres using your implementation
              *    of class Mat4Stack, it's matrix stack transform functions, and your implementation of class Sphere
              */
-            litBox.render();
+
+             //Face 1
+            var inc;
+            for(inc = -0.6 ; inc<=0.3 ;inc=inc+0.3){
+              //Row 1
+              modelView3DStack.push();
+              modelView3DStack.translate([inc,-0.3,-0.5]);
+              litSphere.render();
+              modelView3DStack.pop();
+
+
+              //Row 2
+              modelView3DStack.push();
+              modelView3DStack.translate([inc,0,-0.5]);
+              litSphere.render();
+              modelView3DStack.pop();
+
+              //Row 3
+              modelView3DStack.push();
+              modelView3DStack.translate([inc,-0.6,-0.5]);
+              litSphere.render();
+              modelView3DStack.pop();
+
+              //Row 4
+              modelView3DStack.push();
+              modelView3DStack.translate([inc,0.3,-0.5]);
+              litSphere.render();
+              modelView3DStack.pop();
+
+            }
+            ///Face 2
+            for(inc = -0.6 ; inc<=0.3 ;inc=inc+0.3){
+              modelView3DStack.push();
+              modelView3DStack.translate([-0.3,inc+0.0,0.5]);
+              litSphere.render();
+              modelView3DStack.pop();
+
+              modelView3DStack.push();
+              modelView3DStack.translate([0,inc+0.0,0.5]);
+              litSphere.render();
+              modelView3DStack.pop();
+
+
+              modelView3DStack.push();
+              modelView3DStack.translate([-0.6,inc+0.0,0.5]);
+              litSphere.render();
+              modelView3DStack.pop();
+
+              modelView3DStack.push();
+              modelView3DStack.translate([0.3,inc+0.0,0.5]);
+              litSphere.render();
+              modelView3DStack.pop();
+
+            }
+              //Face 3
+            for(inc = -0.6 ; inc<=0.3 ;inc=inc+0.3){
+              modelView3DStack.push();
+              modelView3DStack.translate([-0.9, 0.3, inc+0.1]);
+              litSphere.render();
+              modelView3DStack.pop();
+
+              modelView3DStack.push();
+              modelView3DStack.translate([-0.9, 0.0, inc+0.1]);
+              litSphere.render();
+              modelView3DStack.pop();
+
+              modelView3DStack.push();
+              modelView3DStack.translate([-0.9, -0.3, inc+0.1]);
+              litSphere.render();
+              modelView3DStack.pop();
+
+              modelView3DStack.push();
+              modelView3DStack.translate([-0.9, -0.6, inc+0.1]);
+              litSphere.render();
+              modelView3DStack.pop();
+
+            }
+            // Face 4
+             for(inc = -0.6 ; inc<=0.3 ;inc=inc+0.3){
+              modelView3DStack.push();
+              modelView3DStack.translate([0.6,0.3,inc+0.1]);
+              litSphere.render();
+              modelView3DStack.pop();
+
+              modelView3DStack.push();
+              modelView3DStack.translate([0.6,0.0,inc+0.1]);
+              litSphere.render();
+              modelView3DStack.pop();
+
+
+              modelView3DStack.push();
+              modelView3DStack.translate([0.6,-0.3,inc+0.1]);
+              litSphere.render();
+              modelView3DStack.pop();
+
+              modelView3DStack.push();
+              modelView3DStack.translate([0.6,-0.6,inc+0.1]);
+              litSphere.render();
+              modelView3DStack.pop();
+
+            }
+            //Face 5
+            for(inc = -0.6 ; inc<=0.3 ;inc=inc+0.3){
+              modelView3DStack.push();
+              modelView3DStack.translate([0.30,0.6,inc+0.12]);
+              litSphere.render();
+              modelView3DStack.pop();
+
+              modelView3DStack.push();
+              modelView3DStack.translate([0.0,0.6,inc+0.12]);
+              litSphere.render();
+              modelView3DStack.pop();
+
+
+              modelView3DStack.push();
+              modelView3DStack.translate([-0.3,0.6,inc+0.12]);
+              litSphere.render();
+              modelView3DStack.pop();
+
+              modelView3DStack.push();
+              modelView3DStack.translate([-0.6,0.6,inc+0.12]);
+              litSphere.render();
+              modelView3DStack.pop();
+
+            }
+          
+            // Face 6
+            for(inc = -0.6 ; inc<=0.3 ;inc=inc+0.3){
+              modelView3DStack.push();
+              modelView3DStack.translate([0.30,-0.85,inc+0.12]);
+              litSphere.render();
+              modelView3DStack.pop();
+
+              modelView3DStack.push();
+              modelView3DStack.translate([0.0,-0.85,inc+0.12]);
+              litSphere.render();
+              modelView3DStack.pop();
+
+
+              modelView3DStack.push();
+              modelView3DStack.translate([-0.3,-0.85,inc+0.12]);
+              litSphere.render();
+              modelView3DStack.pop();
+
+              modelView3DStack.push();
+              modelView3DStack.translate([-0.6,-0.85,inc+0.12]);
+              litSphere.render();
+              modelView3DStack.pop();
+
+            }
 
             // some debug output
             if (debug.showDelta)
                 console.log("Delta: "+delta);
             // some debug output
-            if (debug.showCurrentAngle)
+            if (1)
                 console.log("CurrentAngle: "+currentAngle[0] + " " + currentAngle[1]);
         }
         lastTimestamp = timestamp;
